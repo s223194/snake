@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Snake</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body onkeydown="klawisze()">
+
+    <script>
+
+        //-------------------- PLANSZA DO GRY --------------------------
+
+        //Dodanie elementu plansza
+        var plansza = document.createElement("div");
+        plansza.id = "plansza";
+        document.body.appendChild(plansza);
+
+        //Utworzenie komórek
+        for (var j = 0; j < 22; j++) {
+            for (var k = 0; k < 22; k++) {
+                var komorka = document.createElement("div");
+
+                //X-ksy na brzegach tablicy:
+                if (j == 0 || j == 21 || k == 0 || k == 21) {
+                    komorka.id = "x"
+                    komorka.style.backgroundColor = "#103d00"
+                }
+                else {
+                    komorka.id = j + "x" + k;
+                }
+
+                komorka.classList.add("pole")
+                document.getElementById("plansza").appendChild(komorka);
+            }
+        }
+        console.log("Komórka: ", komorka)
+
+        //-------------------------------------------------------------
+
+        //----- MENU GRY ---------------------------------------------
+        var tytul = document.createElement("div");
+        tytul.id = "tytul";
+        tytul.innerHTML = "SNAKE"
+        document.body.appendChild(tytul);
+
+        //Dodanie elementu plansza
+        var licznik = document.createElement("div");
+        licznik.id = "licznik";
+        document.body.appendChild(licznik);
+
+        var ikonka = document.createElement("div");
+        ikonka.id = "ikonka";
+        licznik.appendChild(ikonka);
+
+        var ile = document.createElement("div");
+        ile.id = "ile";
+        ile.innerHTML = 0;
+        ile.setAttribute("ile", 0)
+        licznik.appendChild(ile);
+
+        var start = document.createElement("div");
+        start.id = "start";
+        start.innerHTML = "Nowa Gra";
+        start.addEventListener("click", rozgrywka);
+        document.body.appendChild(start);
+        //-------------------------------------------------------------
+
+        // PO KLIKNIĘCIU "START GAME"
+
+        function rozgrywka() {
+            var stan = document.getElementById("start").getAttribute("stan")
+            if (stan == undefined) {
+                document.getElementById("start").setAttribute("stan", "gra")
+
+                var czy = document.getElementById("plansza").getAttribute("czy")
+                // if (czy == null) {
+                console.log("!!! START !!!")
+                waz();  //statyczne dodanie węża
+                jablko();   //wylosowanie 1 owoca
+                document.getElementById("plansza").setAttribute("czy", "true")
+                klawisze()  //Uruchomienie funkcji wczytująceje klawisze
+                document.getElementById("plansza").setAttribute("klawa", 39)
+                var cykl = setInterval(ruch, 200)
+                document.getElementById("plansza").setAttribute("sciana", "no")
+                setInterval(function () {
+                    var sciana = document.getElementById("plansza").getAttribute("sciana")
+                    if (sciana == "yes") {
+                        clearInterval(cykl)
+                    }
+                })
+                document.getElementById("start").innerHTML = "Reset gry"
+            }
+            else if (stan == "gra") {
+                location.reload()
+
+            }
+
+        }
+
+        //---- Dodanie owocu -----------------------
+        function jablko() {
+
+            function losowanie(min, max) {
+                min = Math.ceil(min);
+                max = Math.floor(max);
+                return Math.floor(Math.random() * (max - min)) + min;
+            }
+
+            var oy = losowanie(1, 20)
+            var ox = losowanie(1, 20)
+            var los = oy + "x" + ox;
+
+            console.log("Pozycja jabłka: " + los)
+            var on = document.getElementById(los)
+            console.log(on)
+            on.classList.add("jablko");
+            on.setAttribute("owoc", "owoc")
+            console.log("!!!!!!!!owoc: " + on.id)
+        }
+        //-----------------------------------------------
+
+        //Tablica z pozycją węża
+        var ogon = []
+        function waz() {
+            ogon.push(10 + "x" + 10)
+            ogon.push(10 + "x" + 9)
+            ogon.push(10 + "x" + 8)
+            console.log(ogon)
+
+            for (var i = 0; i < waz.length; i++) {
+                var elem = document.getElementById(ogon[i])
+                elem.classList.add("skora")
+            }
+        }
+
+        //----- OBSŁUGA KLAWISZY ----------------------------------------------------------------------------------------------------------
+        function klawisze() {
+            var czy = document.getElementById("plansza").getAttribute("czy")
+            if (czy == "true") {
+
+                var klawisz = event.keyCode;
+                // console.log(klawisz)
+
+                if (klawisz == 87 || klawisz == 83 || klawisz == 65 || klawisz == 68 || klawisz == 38 || klawisz == 40 || klawisz == 37 || klawisz == 39 || klawisz == 32) {
+                    var pop = parseInt(document.getElementById("plansza").getAttribute("klawa"))
+                    // console.log(pop)
+                    if (pop == null) {
+                        document.getElementById("plansza").setAttribute("klawa", klawisz)
+                    }
+
+                    //--- Strzałki
+                    //Gs
+                    else if (klawisz == 38 && pop != 40 && pop != 83) {
+                        document.getElementById("plansza").setAttribute("klawa", klawisz)
+                        // console.log("KEY: " + klawisz)
+                    }
+                    //Ds
+                    else if (klawisz == 40 && pop != 38 && pop != 87) {
+                        document.getElementById("plansza").setAttribute("klawa", klawisz)
+                        // console.log("KEY: " + klawisz)
+                    }
+
+                    // Ls
+                    else if (klawisz == 37 && pop != 39 && pop != 68) {
+                        document.getElementById("plansza").setAttribute("klawa", klawisz)
+                        // console.log("KEY: " + klawisz)
+                    }
+                    //Ps
+                    else if (klawisz == 39 && pop != 37 && pop != 65) {
+                        document.getElementById("plansza").setAttribute("klawa", klawisz)
+                        // console.log("KEY: " + klawisz)
+                    }
+
+
+                    //--- WSAD
+                    //W
+                    else if (klawisz == 87 && pop != 83 && pop != 40) {
+                        document.getElementById("plansza").setAttribute("klawa", klawisz)
+                        // console.log("KEY: " + klawisz)
+                    }
+                    //S
+                    else if (klawisz == 83 && pop != 87 && pop != 38) {
+                        document.getElementById("plansza").setAttribute("klawa", klawisz)
+                        // console.log("KEY: " + klawisz)
+                    }
+                    //A
+                    else if (klawisz == 65 && pop != 68 && pop != 39) {
+                        document.getElementById("plansza").setAttribute("klawa", klawisz)
+                        // console.log("KEY: " + klawisz)
+                    }
+                    //D
+                    else if (klawisz == 68 && pop != 65 && pop != 37) {
+                        document.getElementById("plansza").setAttribute("klawa", klawisz)
+                        // console.log("KEY: " + klawisz)
+                    }
+                }
+            }
+        }
+        //-------------------------------------------------------------------------------------------------------------------------
+
+        //--------- RUCH WĘŻA -----------------------------------------------------------------------
+        function ruch() {
+            var czy = document.getElementById("plansza").getAttribute("czy")
+
+            //Przemalowanie starego węża na zielono
+            for (var m = 0; m < ogon.length; m++) {
+                var elem = document.getElementById(ogon[m])
+
+                //Jeżeli ściana to Alert
+                if (elem == null) {
+                    document.getElementById("plansza").setAttribute("sciana", "yes")
+                    let licznik = document.getElementById("ile");
+                    let ile = parseInt(licznik.getAttribute("ile"))
+                    alert("PRZEGRAŁEŚ !!!  |  Twój wynik to: " + ile)
+                    location.reload()
+                }
+                else {
+                    elem.style.background = "#41871a";
+                }
+
+
+            }
+
+            var klawisz = document.getElementById("plansza").getAttribute("klawa")
+
+            //Jeżeli kliknięto klawisz
+            if (klawisz != null) {
+
+                var len = (ogon.length) - 1;
+
+                var ogta = ogon[len].split("x")
+
+                var y = parseInt(ogta[0]);
+                var x = parseInt(ogta[1]);
+                // console.log("Y :" + x)
+                // console.log("X :" + x)
+
+                //lewo
+                if (klawisz == 37 || klawisz == 65) {
+                    x = x - 1;
+                }
+
+                //góra
+                else if (klawisz == 38 || klawisz == 87) {
+                    y = y - 1;
+                }
+
+                //prawo
+                else if (klawisz == 39 || klawisz == 68) {
+                    x = x + 1;
+                }
+
+                //dol
+                else if (klawisz == 40 || klawisz == 83) {
+                    y = y + 1;
+                }
+
+                //Przesunięcie węża w wskazanym kierunku
+                for (var l = 0; l < len; l++) {
+                    ogon[l] = ogon[l + 1]
+                }
+
+                //Nowa pozycja głowy
+                var now = y + "x" + x;
+
+                //Wykrywanie kolizji ogonas
+                if (ogon.length > 3) {
+                    for (var g = 0; g < (ogon.length - 1); g++) {
+                        if (ogon[g] == now) {
+                            let licznik = document.getElementById("ile");
+                            let ile = parseInt(licznik.getAttribute("ile"))
+                            alert("PRZEGRAŁEŚ !!!  |  Twój wynik to: " + ile)
+                            location.reload()
+                        }
+                        else {
+                            ogon[len] = now;
+                        }
+                    }
+                }
+                else {
+                    ogon[len] = now;
+                }
+
+                // console.log(ogon)
+            }
+
+            for (var l = 0; l < ogon.length; l++) {
+                // console.log(ogon[l])
+                var blur = document.getElementById(ogon[l])
+                var jablo = blur.getAttribute("owoc")
+                if (blur == null) {
+                    let licznik = document.getElementById("ile");
+                    let ile = parseInt(licznik.getAttribute("ile"))
+                    alert("PRZEGRAŁEŚ !!!  |  Twój wynik to: " + ile)
+                    location.reload()
+                }
+                else {
+                    //Zjedzenie owoca
+                    if (jablo == "owoc") {
+                        let len = (ogon.length) - 1;
+                        let no = ogon[len].split("x")
+                        let noy = parseInt(no[0]);
+                        let nox = parseInt(no[1]);
+                        let zm = noy + "x" + nox;
+                        ogon.push(zm)
+                        blur.classList.remove("jablko")
+                        blur.removeAttribute("owoc")
+                        let licznik = document.getElementById("ile");
+                        let ile = parseInt(licznik.getAttribute("ile"))
+                        ile = ile + 1
+                        licznik.setAttribute("ile", ile)
+                        licznik.innerHTML = ile;
+                        jablko()
+                    }
+                    else
+                        blur.style.background = "blue";
+                    clearInterval(ruch)
+                }
+            }
+        }
+      //-----------------------------------------------------------------------------------------
+
+    </script>
+</body>
+
+</html>
